@@ -9,7 +9,7 @@ output:
 ---
 
 
-```{r setup, warning=F,message=F}
+```{r setup, warning=F,message=F, include=FALSE}
 library(tidyverse)
 library(tidyr)
 library(ggthemes)
@@ -68,10 +68,13 @@ ggplot(summer,aes(x=ndmi,y=ndvi,color=site))+
   xlim(-0.5,0.5)+
   theme_few()+
   theme(legend.position=c(0.2,0.8))
+
+#correlation
+cor(summer$ndmi,summer$ndvi)
   
 ```
 
-A: Based off the plot, there is a positive 
+A: Based off the plot, there is a positive correlation between ndmi and ndvi. I ran a correlation test and found that the correlation for summer months between NDMI and NDVI is 0.68. 
 
 ## Question 2 
 
@@ -108,7 +111,8 @@ combined<-inner_join(ndvi_avg,ndsi_avg)
 cor(combined$ndvi_avg,combined$ndsi_avg)
 
 ```
-When we are considering all sites and time frames, the data shows that there is low correlation between snow cover and vegetation growth, 0.199. While the correlation assumes that the two sites recieve similar precipitation, it excludes several variables from burned to unburned, pre and post fire, but it also doesnt account for differences in and runoff patterns between the sites since we don't know if there is a difference in elevation or slope that would impact the correlation between snow cover and vegetation growth. 
+When we are considering all sites and time frames, the data shows that there is low correlation between snow cover and vegetation growth, 0.199. This low correlation between the previous year's snow cover on vegetation
+growth for the following summer excludes several variables from burned to unburned, pre and post fire,and also doesnt account for differences in and runoff patterns between the sites since we don't know if there is a difference in elevation or slope that would impact the correlation between snow cover and vegetation growth. 
 
 ## Q3
 
@@ -170,20 +174,6 @@ Burned<-cor(burnedsnow$ndsi_avg,burnedveg$ndvi_avg)
 
 ```
 
-#visualizing the data
-
-```{r}
-#combining averages for the different sites
-PreData<-inner_join(presnow,preveg)
-PostData<-inner_join(postsnow,postveg)
-UnburnedData<-inner_join(unburnedsnow,unburnedveg)
-BurnedData<-inner_join(burnedsnow,burnedveg)
-
-#graphs
-PreGraph<-ggplot(PreData, aes(x=ndsi_avg,y=ndvi_avg))+
-                   geom_point()
-
-```
 
 ## Question 4
 
@@ -205,7 +195,7 @@ green_avgmonth$month
 
 ```
 
-August is the greenest month on average.
+A:August is the greenest month on average.
 
 ## Question 5) 
 
@@ -224,7 +214,7 @@ snow_avgmonth<-ndsi%>%
   filter(ndsi_avgmonth == max(ndsi_avgmonth))
 ```
 
-January is the snowiest month on average. 
+A: January is the snowiest month on average. 
 
 ## Bonus Question: Redo all problems with `spread` and `gather` using modern tidyverse syntax.
 
