@@ -6,6 +6,14 @@ output:
   html_document: default
   word_document: default
   pdf_document: default
+  
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = 'index',
+      output_dir='../'
+    )
+  })
 ---
 
 
@@ -74,14 +82,13 @@ cor(summer$ndmi,summer$ndvi)
   
 ```
 
-A: Based off the plot, there is a positive correlation between ndmi and ndvi. I ran a correlation test and found that the correlation for summer months between NDMI and NDVI is 0.68. 
+A: Based off the plot, there is a positive correlation between ndmi and ndvi. I ran a correlation test and found that the correlation for summer months between NDMI and NDVI is 0.68. This initial analysis is not considering any other variables (ie burned vs unburned), which would be worth looking into to determine if there are stronger relationships present. 
 
 ## Question 2 
 
 2) What is the correlation between average NDSI (normalized
  snow index) for January - April and average NDVI for June-August?
-In other words, does the previous year's snow cover influence vegetation
- growth for the following summer?
+In other words, does the previous year's snow cover influence vegetation growth for the following summer?
 
 ```{r warning=F,message=F}
 #variable ndsi months
@@ -110,16 +117,21 @@ combined<-inner_join(ndvi_avg,ndsi_avg)
 #correlation
 cor(combined$ndvi_avg,combined$ndsi_avg)
 
+#plot
+ggplot(combined, aes(x=ndvi_avg, y=ndsi_avg,color=site))+
+  geom_point()+
+  theme_few()+
+  theme(legend.position=c(0.2,0.8))
+
 ```
-When we are considering all sites and time frames, the data shows that there is low correlation between snow cover and vegetation growth, 0.199. This low correlation between the previous year's snow cover on vegetation
-growth for the following summer excludes several variables from burned to unburned, pre and post fire,and also doesnt account for differences in and runoff patterns between the sites since we don't know if there is a difference in elevation or slope that would impact the correlation between snow cover and vegetation growth. 
+When we are considering all sites and time frames, the data shows that there is low correlation between snow cover and vegetation growth, 0.18. This low correlation between the previous year's snow cover on vegetation growth for the following summer excludes several variables like burned and unburned, which on our plot we can see how that there is a difference between these variables. Our analysis also doesn't account for differences in runoff patterns due to elevation and slope that would impact the correlation between snow cover and vegetation growth. 
 
 ## Q3
 
 How is the snow effect from question 2 different between pre- and post-burn
 and burned and unburned? 
 
-```{r fig.width=7,fig.height=7}
+```{r ,message=F,fig.width=7,fig.height=7}
 #create dataframe on pre-and post 2002- hayman fire.
 preyears<-c(1984:2002)
 postyears<-c(2003:2019)
@@ -172,14 +184,18 @@ Post<-cor(postsnow$ndsi_avg,postveg$ndvi_avg)
 Unburned<-cor(unburnedsnow$ndsi_avg,unburnedveg$ndvi_avg)
 Burned<-cor(burnedsnow$ndsi_avg,burnedveg$ndvi_avg)
 
-```
+#Answers in a table
+answers<-data.frame(Pre,Post,Unburned,Burned)
+answers
 
+```
+Based off our correlations, we see no relationship between ndsi vs ndvi when we consider pre and post fire, as well as unburned and burned. This alludes to other underlying variables impacting our values such as shifts in climate year to year, soil type, and runoff rates that could be influencing these relationships. 
 
 ## Question 4
 
 What month is the greenest month on average? 
 
-```{r}
+```{r, message=F}
 green_avgmonth<-ndvi%>% 
   pivot_longer(
     cols= c("burned","unburned"),
@@ -191,7 +207,8 @@ green_avgmonth<-ndvi%>%
   summarize(ndvi_avgmonth=mean(value)) %>%
   filter(ndvi_avgmonth == max(ndvi_avgmonth))
 
-green_avgmonth$month
+green_avgmonth
+
 
 ```
 
